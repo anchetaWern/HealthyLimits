@@ -1,14 +1,25 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-center fill-height">
-    
+
+      <div :class="['alert-container mb-3', 'text-body-2']">
+        <v-alert type="info" text="">
+          <div class="text-subtitle-1 font-weight-medium">How to use</div>
+          <ol>
+            <li>1. Set your desired sodium limit. If you want to stay within the healthy range, this should be between 1,500mg to 2,300mg per day.</li>
+            <li>2. Set how many times do you eat per day (including snacks).</li>
+            <li>3. Set the estimated number of servings your dish can make. This should be equivalent to the number of people your dish can feed. This assumes each serving is of equal amount.</li>
+          </ol>
+        </v-alert>
+      </div>
+
       <v-row class="d-flex justify-center">
        <v-col
           cols="12"
           sm="6"
         >
           <div :class="['text-body-2']">
-            Daily sodium limit (mg)
+            1. Daily sodium limit (mg)
           </div>
 
           <v-text-field
@@ -27,7 +38,7 @@
           sm="6"
         >
           <div :class="['text-body-2']">
-            Meals per day
+            2. Meals per day
           </div>
 
           <v-row>
@@ -47,7 +58,7 @@
           cols="12"
           sm="6"
         >
-          <div :class="['text-body-2']">Estimated number of servings for this dish</div>
+          <div :class="['text-body-2']">3. Estimated number of servings</div>
           
           <v-row>
             <v-col cols="10">
@@ -166,6 +177,14 @@
 </template>
 
 <style>
+ol li {
+  margin-bottom: 10px;
+}
+
+.alert-container {
+  line-height: 18px;
+}
+
 .v-card-title {
   font-size: 1rem !important;
 }
