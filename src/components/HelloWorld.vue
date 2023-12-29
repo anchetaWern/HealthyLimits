@@ -3,7 +3,7 @@
     <v-responsive class="align-center fill-height">
 
       <div :class="['alert-container mb-3', 'text-body-2']">
-        <v-alert type="info" text="">
+        <v-alert type="info" text="" closable>
           <div class="text-subtitle-1 font-weight-medium">How to use</div>
           <ol>
             <li>1. Set your desired sodium limit. If you want to stay within the healthy range, this should be between 1,500mg to 2,300mg per day.</li>
