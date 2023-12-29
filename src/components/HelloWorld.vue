@@ -172,6 +172,14 @@
         ></v-card>
       </v-row>
 
+      <v-row class="d-flex justify-center mb-2">
+        <v-card
+          :title="`Knorr cubes: ${knorrCubesAmount} cube`"
+          width="300"
+          text="1/2 cube = 1,110mg sodium"
+        ></v-card>
+      </v-row>
+
     </v-responsive>
   </v-container>
 </template>
@@ -274,6 +282,11 @@ const knorrSinigangMixAmount = computed(() => {
 const jufranThaiFishSauceAmount = computed(() => {
   const sodium_content_per_teaspoon_of_jufran_thai_fish_sauce = 270;
   return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_teaspoon_of_jufran_thai_fish_sauce);
+});
+
+const knorrCubesAmount = computed(() => {
+  const sodium_content_per_half_knorr_cubes = 1110;
+  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_half_knorr_cubes) * 0.5;
 });
 
 </script>
