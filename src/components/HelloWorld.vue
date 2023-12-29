@@ -63,15 +63,15 @@
       <v-row class="d-flex justify-center mb-2">
       
         <v-card
-          :title="`Salt: ${saltAmount} tsp.`"
+          :title="`Salt: ${saltAmount} pinch.`"
           width="300"
-          text="1 teaspoon = 2,300mg sodium"
+          text="1 pinch = 400mg sodium"
         ></v-card>
       </v-row>
 
       <v-row class="d-flex justify-center mb-2">
         <v-card
-          :title="`Soy Sauce: ${soySauceAmount} tbsp.`"
+          :title="`Soy Sauce (Toyo): ${soySauceAmount} tbsp.`"
           width="300"
           text="1 tablespoon = 900mg sodium"
         ></v-card>
@@ -79,11 +79,28 @@
 
       <v-row class="d-flex justify-center mb-2">
         <v-card
-          :title="`Fish Sauce: ${fishSauceAmount} tbsp.`"
+          :title="`Fish Sauce (Patis): ${fishSauceAmount} tbsp.`"
           width="300"
           text="1 tablespoon = 1,413 sodium"
         ></v-card>
       </v-row>
+
+      <v-row class="d-flex justify-center mb-2">
+        <v-card
+          :title="`Ginisa mix: ${ginisaMixAmount} pinch`"
+          width="300"
+          text="1.3 grams = 260mg sodium"
+        ></v-card>
+      </v-row>
+
+      <v-row class="d-flex justify-center mb-2">
+        <v-card
+          :title="`Magic Sarap: ${magicSarapAmount} pinch`"
+          width="300"
+          text="2 grams = 502mg sodium"
+        ></v-card>
+      </v-row>
+
 
       <v-row class="d-flex justify-center mb-2">
         <v-card
@@ -168,13 +185,32 @@ const getSodiumServing = (sodium_limit_per_meal, sodium_per_serving) => {
 }
 
 const saltAmount = computed(() => {
-  const sodium_content_per_teaspoon_of_salt = 2300; // mg
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_teaspoon_of_salt); 
+  const sodium_content_per_pinch_of_salt = 400; // mg
+  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_pinch_of_salt); 
 });
+
+const getPinchSodiumServing = (sodium_limit_per_meal, sodium_per_serving, gram_per_serving) => {
+  const grams_per_pinch = 0.36;
+  const number_of_servings = sodium_limit_per_meal / sodium_per_serving;
+  const total_grams = number_of_servings * gram_per_serving;
+  return Math.round(total_grams / grams_per_pinch);
+}
 
 const soySauceAmount = computed(() => {
   const sodium_content_per_tablespoon_of_soysauce = 900;
   return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_soysauce);
+});
+
+const ginisaMixAmount = computed(() => {
+  const sodium_content_per_serving_of_ginisa_mix = 260;
+  const gram_per_serving = 1.3;
+  return getPinchSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_serving_of_ginisa_mix, gram_per_serving);
+});
+
+const magicSarapAmount = computed(() => {
+  const sodium_content_per_serving_of_magic_sarap = 502;
+  const gram_per_serving = 2;
+  return getPinchSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_serving_of_magic_sarap, gram_per_serving);
 });
 
 const fishSauceAmount = computed(() => {
