@@ -75,110 +75,14 @@
         <div :class="['text-h6 mt-1']">Seasoning amount for your dish</div>
       </v-row>
 
-      <v-row class="d-flex justify-center mb-2">
+      <v-row class="d-flex justify-center mb-2" v-for="(item, index) in seasonings">
         <v-card
-          :title="`Salt: ${saltAmount} pinch.`"
+          :title="`${item.title.replace('[amount]', computedText(item))}`"
           width="300"
-          text="1 pinch = 400mg sodium"
+          :text="item.text"
         ></v-card>
       </v-row>
 
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Soy Sauce (Toyo): ${soySauceAmount} tbsp.`"
-          width="300"
-          text="1 tablespoon = 900mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Fish Sauce (Patis): ${fishSauceAmount} tbsp.`"
-          width="300"
-          text="1 tablespoon = 1,413 sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Ajinomoto Ginisa mix: ${ginisaMixAmount} pinch`"
-          width="300"
-          text="1.3 grams = 260mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Maggi Magic Sarap: ${magicSarapAmount} pinch`"
-          width="300"
-          text="2 grams = 502mg sodium"
-        ></v-card>
-      </v-row>
-
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Oyster Sauce: ${oysterSauceAmount} tbsp.`"
-          width="300"
-          text="1 tablespoon = 491mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Worcestershire Sauce: ${worcestershireSauceAmount} tbsp.`"
-          width="300"
-          text="1 tablespoon = 166mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Coco Aminos: ${cocoAminosAmount} tbsp.`"
-          width="300"
-          text="1 tablespoon = 270mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Kikkoman soy sauce: ${kikkomanSoySauceAmount} tbsp.`"
-          width="300"
-          text="1 tablespoon = 960mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Kikkoman low sodium soy: ${kikkomanLowSodiumSoySauceAmount} tbsp.`"
-          width="300"
-          text="1 tablespoon = 570mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Knorr sinigang mix: ${knorrSinigangMixAmount} pinch`"
-          width="300"
-          text="2.8 grams = 474mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Jufran thai fish sauce: ${jufranThaiFishSauceAmount} tsp.`"
-          width="300"
-          text="1 teaspoon = 270mg sodium"
-        ></v-card>
-      </v-row>
-
-      <v-row class="d-flex justify-center mb-2">
-        <v-card
-          :title="`Knorr cubes: ${knorrCubesAmount} cube`"
-          width="300"
-          text="1/2 cube = 1,110mg sodium"
-        ></v-card>
-      </v-row>
 
     </v-responsive>
   </v-container>
@@ -210,14 +114,9 @@ const sodiumLimitPerMeal = computed(() => {
 
 const numberOfServings = ref(5);
 
-const getSodiumServing = (sodium_limit_per_meal, sodium_per_serving) => {
-  return Math.round((sodium_limit_per_meal / sodium_per_serving) * numberOfServings.value);
+const getSodiumServing = (sodium_limit_per_meal, sodium_per_serving, multiplier = 1) => {
+  return Math.round((sodium_limit_per_meal / sodium_per_serving) * numberOfServings.value) * multiplier;
 }
-
-const saltAmount = computed(() => {
-  const sodium_content_per_pinch_of_salt = 400; // mg
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_pinch_of_salt); 
-});
 
 const getPinchSodiumServing = (sodium_limit_per_meal, sodium_per_serving, gram_per_serving) => {
   const grams_per_pinch = 0.36;
@@ -226,67 +125,93 @@ const getPinchSodiumServing = (sodium_limit_per_meal, sodium_per_serving, gram_p
   return Math.round(total_grams / grams_per_pinch);
 }
 
-const soySauceAmount = computed(() => {
-  const sodium_content_per_tablespoon_of_soysauce = 900;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_soysauce);
-});
+const computedText = (item) => {
+  if (item.method === 'pinch') {
+    return getPinchSodiumServing(sodiumLimitPerMeal.value, item.sodium_content_per_serving, item.gram_per_serving);
+  } 
+  const multi = item.multiplier ? item.multiplier : 1;
+  return getSodiumServing(sodiumLimitPerMeal.value, item.sodium_content_per_unit, multi); 
+};
 
-const ginisaMixAmount = computed(() => {
-  const sodium_content_per_serving_of_ginisa_mix = 260;
-  const gram_per_serving = 1.3;
-  return getPinchSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_serving_of_ginisa_mix, gram_per_serving);
-});
+const seasonings = [
+  {
+    title: `Salt: [amount] pinch.`,
+    text: '1 pinch = 400mg sodium',
+    sodium_content_per_unit: 400,
+  },
+  {
+    title: `Soy Sauce (Toyo): [amount] tbsp.`,
+    text: '1 tablespoon = 900mg sodium',
+    sodium_content_per_unit: 900,
+  },
+  {
+    title: `Fish Sauce (Patis): [amount] tbsp.`,
+    text: '1 tablespoon = 1,413 sodium',
+    sodium_content_per_unit: 1413,
+  },
+  {
+    title: `Ajinomoto Ginisa mix: [amount] pinch`,
+    text: '1.3 grams = 260mg sodium',
+    sodium_content_per_serving: 260,
+    gram_per_serving: 1.3,
+    method: 'pinch',
+  },
+  {
+    title: `Maggi Magic Sarap: [amount] pinch`,
+    text: '2 grams = 502mg sodium',
+    sodium_content_per_serving: 502,
+    gram_per_serving: 2,
+    method: 'pinch',
+  },
 
-const magicSarapAmount = computed(() => {
-  const sodium_content_per_serving_of_magic_sarap = 502;
-  const gram_per_serving = 2;
-  return getPinchSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_serving_of_magic_sarap, gram_per_serving);
-});
+  {
+    title: `Oyster Sauce: [amount] tbsp.`,
+    text: '1 tablespoon = 491mg sodium',
+    sodium_content_per_unit: 491,
+  },
 
-const fishSauceAmount = computed(() => {
-  const sodium_content_per_tablespoon_of_fish_sauce = 1413;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_fish_sauce);
-});
+  {
+    title: `Worcestershire Sauce: [amount] tbsp.`,
+    text: '1 tablespoon = 166mg sodium',
+    sodium_content_per_unit: 166,
+  },
 
-const oysterSauceAmount = computed(() => {
-  const sodium_content_per_tablespoon_of_oyster_sauce = 491;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_oyster_sauce);
-});
+  {
+    title: `Coco Aminos: [amount] tbsp.`,
+    text: '1 tablespoon = 270mg sodium',
+    sodium_content_per_unit: 270,
+  },
 
-const worcestershireSauceAmount = computed(() => {
-  const sodium_content_per_tablespoon_of_worcestershire_sauce = 166;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_worcestershire_sauce);
-});
+  {
+    title: `Kikkoman soy sauce: [amount] tbsp.`,
+    text: '1 tablespoon = 960mg sodium',
+    sodium_content_per_unit: 960,
+  },
+  {
+    title: `Kikkoman low sodium soy: [amount] tbsp.`,
+    text: '1 tablespoon = 570mg sodium',
+    sodium_content_per_unit: 570,
+  },
+  {
+    title: `Knorr sinigang mix: [amount] pinch`,
+    text: '2.8 grams = 474mg sodium',
+    sodium_content_per_serving: 474,
+    gram_per_serving: 2.8,
+    method: 'pinch',
+  },
 
-const cocoAminosAmount = computed(() => {
-  const sodium_content_per_tablespoon_of_coco_aminos = 270;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_coco_aminos);
-});
+  {
+    title: `Jufran thai fish sauce: [amount] tsp.`,
+    text: '1 teaspoon = 270mg sodium',
+    sodium_content_per_unit: 270,
+  },
 
-const kikkomanSoySauceAmount = computed(() => {
-  const sodium_content_per_tablespoon_of_kikkoman_soysauce = 960;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_kikkoman_soysauce);
-});
-
-const kikkomanLowSodiumSoySauceAmount = computed(() => {
-  const sodium_content_per_tablespoon_of_kikkoman_less_sodium = 590;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_tablespoon_of_kikkoman_less_sodium);
-});
-
-const knorrSinigangMixAmount = computed(() => {
-  const sodium_content_per_serving_of_knorr_sinigang_mix = 474;
-  const gram_per_serving = 2.8;
-  return getPinchSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_serving_of_knorr_sinigang_mix, gram_per_serving);
-});
-
-const jufranThaiFishSauceAmount = computed(() => {
-  const sodium_content_per_teaspoon_of_jufran_thai_fish_sauce = 270;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_teaspoon_of_jufran_thai_fish_sauce);
-});
-
-const knorrCubesAmount = computed(() => {
-  const sodium_content_per_half_knorr_cubes = 1110;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_half_knorr_cubes) * 0.5;
-});
-
+  {
+    title: `Knorr cubes: [amount] cube`,
+    text: '1/2 cube = 1,110mg sodium',
+    sodium_content_per_unit: 1110,
+    multiplier: 0.5,
+  }
+  
+];
 </script>
