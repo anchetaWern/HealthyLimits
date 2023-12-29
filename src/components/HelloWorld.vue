@@ -47,7 +47,7 @@
           cols="12"
           sm="6"
         >
-          <div :class="['text-body-2']">Estimated number of servings</div>
+          <div :class="['text-body-2']">Estimated number of servings for this dish</div>
           
           <v-row>
             <v-col cols="10">
@@ -61,7 +61,10 @@
       </v-row>
 
       <v-row class="d-flex justify-center mb-2">
-      
+        <div :class="['text-h6 mt-1']">Seasoning amount for your dish</div>
+      </v-row>
+
+      <v-row class="d-flex justify-center mb-2">
         <v-card
           :title="`Salt: ${saltAmount} pinch.`"
           width="300"
@@ -87,7 +90,7 @@
 
       <v-row class="d-flex justify-center mb-2">
         <v-card
-          :title="`Ginisa mix: ${ginisaMixAmount} pinch`"
+          :title="`Ajinomoto Ginisa mix: ${ginisaMixAmount} pinch`"
           width="300"
           text="1.3 grams = 260mg sodium"
         ></v-card>
@@ -95,7 +98,7 @@
 
       <v-row class="d-flex justify-center mb-2">
         <v-card
-          :title="`Magic Sarap: ${magicSarapAmount} pinch`"
+          :title="`Maggi Magic Sarap: ${magicSarapAmount} pinch`"
           width="300"
           text="2 grams = 502mg sodium"
         ></v-card>
