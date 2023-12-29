@@ -147,9 +147,9 @@
 
       <v-row class="d-flex justify-center mb-2">
         <v-card
-          :title="`Knorr sinigang mix: ${knorrSinigangMixAmount} tsp.`"
+          :title="`Knorr sinigang mix: ${knorrSinigangMixAmount} pinch`"
           width="300"
-          text="1 teaspoon = 948mg sodium"
+          text="2.8 grams = 474mg sodium"
         ></v-card>
       </v-row>
 
@@ -247,8 +247,9 @@ const kikkomanLowSodiumSoySauceAmount = computed(() => {
 });
 
 const knorrSinigangMixAmount = computed(() => {
-  const sodium_content_per_teaspoon_of_knorr_sinigang_mix = 948;
-  return getSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_teaspoon_of_knorr_sinigang_mix);
+  const sodium_content_per_serving_of_knorr_sinigang_mix = 474;
+  const gram_per_serving = 2.8;
+  return getPinchSodiumServing(sodiumLimitPerMeal.value, sodium_content_per_serving_of_knorr_sinigang_mix, gram_per_serving);
 });
 
 const jufranThaiFishSauceAmount = computed(() => {
