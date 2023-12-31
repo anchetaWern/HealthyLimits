@@ -43,7 +43,9 @@
 
           <v-row>
             <v-col cols="10">
-              <v-slider min="1" max="6" v-model="mealsPerDay" step="1" show-ticks hint="The number of meals (including snacks) that you're eating per day. The sodium limit will be equally divided among your meals per day. For example, if you set the sodium limit to 1,500mg per day and you're eating 3 meals a day. The sodium limit for each meal will be 1500/3 = 500mg per meal."></v-slider>
+              <div class="pr-1 pl-3">
+                <v-slider min="1" max="6" v-model="mealsPerDay" step="1" show-ticks hint="The number of meals (including snacks) that you're eating per day. The sodium limit will be equally divided among your meals per day. For example, if you set the sodium limit to 1,500mg per day and you're eating 3 meals a day. The sodium limit for each meal will be 1500/3 = 500mg per meal."></v-slider>
+              </div>
             </v-col>
             <v-col>
               <div :class="['text-body-1 mt-1']">{{mealsPerDay}}</div>
@@ -62,7 +64,9 @@
           
           <v-row>
             <v-col cols="10">
-              <v-slider min="1" max="20" v-model="numberOfServings" step="1" show-ticks hint="This is your estimated number of servings for a dish. For example, you're cooking Sinigang (Filipino sour soup dish) and you expect it to feed 6 people. In this case, the number of servings will be 6. Of course, this assumes that each serving will be of equal amounts for each person. This value is used for getting the total sodium limit by means of multiplication."></v-slider>
+              <div class="pl-3">
+                <v-slider min="1" max="20" v-model="numberOfServings" step="1" show-ticks hint="This is your estimated number of servings for a dish. For example, you're cooking Sinigang (Filipino sour soup dish) and you expect it to feed 6 people. In this case, the number of servings will be 6. Of course, this assumes that each serving will be of equal amounts for each person. This value is used for getting the total sodium limit by means of multiplication."></v-slider>
+              </div>
             </v-col>
             <v-col>
               <div :class="['text-body-1 mt-1']">{{numberOfServings}}</div>
@@ -71,16 +75,39 @@
         </v-col>
       </v-row>
 
-      <v-row class="d-flex justify-center mb-2">
-        <div :class="['text-h6 mt-1']">Seasoning amount for your dish</div>
+      <v-row class="d-flex justify-center">
+        <v-col cols="10">
+          <div :class="['text-h6 mt-1']">Seasoning amount for your dish</div>
+        </v-col>
+      </v-row>
+
+      <v-row class="d-flex justify-end mb-2">
+        <v-col cols="4">
+          <v-btn size="small" @click="resetPercent">Reset</v-btn>
+        </v-col>
       </v-row>
 
       <v-row class="d-flex justify-center mb-2" v-for="(item, index) in seasonings">
         <v-card
-          :title="`${item.title.replace('[amount]', computedText(item))}`"
+          :title="`${item.title.replace('[amount]', computedServing(item))}`"
           width="300"
           :text="item.text"
-        ></v-card>
+        >
+          
+            
+            <v-row>
+              <v-col cols="9">
+                <div class="pr-1 pl-3">
+                  <v-slider v-model="item.percentage" min="0" max="100" step="5" show-ticks hint=""></v-slider>
+                </div>
+              </v-col>
+              <v-col>
+                <div :class="['text-body-2 mt-1']">{{item.percentage}}%</div>
+              </v-col>
+            </v-row>
+
+         
+        </v-card>
       </v-row>
 
 
@@ -125,29 +152,34 @@ const getPinchSodiumServing = (sodium_limit_per_meal, sodium_per_serving, gram_p
   return Math.round(total_grams / grams_per_pinch);
 }
 
-const computedText = (item) => {
+const computedServing = (item) => {
+  const sodiumLimitForSeasoning = item.percentage === 0 ? sodiumLimitPerMeal.value : (sodiumLimitPerMeal.value * item.percentage) / 100;
+
   if (item.method === 'pinch') {
-    return getPinchSodiumServing(sodiumLimitPerMeal.value, item.sodium_content_per_serving, item.gram_per_serving);
+    return getPinchSodiumServing(sodiumLimitForSeasoning, item.sodium_content_per_serving, item.gram_per_serving);
   } 
   const multi = item.multiplier ? item.multiplier : 1;
-  return getSodiumServing(sodiumLimitPerMeal.value, item.sodium_content_per_unit, multi); 
+  return getSodiumServing(sodiumLimitForSeasoning, item.sodium_content_per_unit, multi); 
 };
 
-const seasonings = [
+const seasonings = ref([
   {
     title: `Salt: [amount] pinch.`,
     text: '1 pinch = 400mg sodium',
     sodium_content_per_unit: 400,
+    percentage: ref(0),
   },
   {
     title: `Soy Sauce (Toyo): [amount] tbsp.`,
     text: '1 tablespoon = 900mg sodium',
     sodium_content_per_unit: 900,
+    percentage: ref(0),
   },
   {
     title: `Fish Sauce (Patis): [amount] tbsp.`,
     text: '1 tablespoon = 1,413 sodium',
     sodium_content_per_unit: 1413,
+    percentage: ref(0),
   },
   {
     title: `Ajinomoto Ginisa mix: [amount] pinch`,
@@ -155,6 +187,7 @@ const seasonings = [
     sodium_content_per_serving: 260,
     gram_per_serving: 1.3,
     method: 'pinch',
+    percentage: ref(0),
   },
   {
     title: `Maggi Magic Sarap: [amount] pinch`,
@@ -162,35 +195,41 @@ const seasonings = [
     sodium_content_per_serving: 502,
     gram_per_serving: 2,
     method: 'pinch',
+    percentage: ref(0),
   },
 
   {
     title: `Oyster Sauce: [amount] tbsp.`,
     text: '1 tablespoon = 491mg sodium',
     sodium_content_per_unit: 491,
+    percentage: ref(0),
   },
 
   {
     title: `Worcestershire Sauce: [amount] tbsp.`,
     text: '1 tablespoon = 166mg sodium',
     sodium_content_per_unit: 166,
+    percentage: 0,
   },
 
   {
     title: `Coco Aminos: [amount] tbsp.`,
     text: '1 tablespoon = 270mg sodium',
     sodium_content_per_unit: 270,
+    percentage: ref(0),
   },
 
   {
     title: `Kikkoman soy sauce: [amount] tbsp.`,
     text: '1 tablespoon = 960mg sodium',
     sodium_content_per_unit: 960,
+    percentage: ref(0),
   },
   {
     title: `Kikkoman low sodium soy: [amount] tbsp.`,
     text: '1 tablespoon = 570mg sodium',
     sodium_content_per_unit: 570,
+    percentage: ref(0),
   },
   {
     title: `Knorr sinigang mix: [amount] pinch`,
@@ -198,12 +237,14 @@ const seasonings = [
     sodium_content_per_serving: 474,
     gram_per_serving: 2.8,
     method: 'pinch',
+    percentage: ref(0),
   },
 
   {
     title: `Jufran thai fish sauce: [amount] tsp.`,
     text: '1 teaspoon = 270mg sodium',
     sodium_content_per_unit: 270,
+    percentage: ref(0),
   },
 
   {
@@ -211,7 +252,30 @@ const seasonings = [
     text: '1/2 cube = 1,110mg sodium',
     sodium_content_per_unit: 1110,
     multiplier: 0.5,
+    percentage: ref(0),
   }
   
-];
+]);
+
+
+watch(seasonings, (newSeasonings, oldSeasonings) => {
+  
+  const selectedSeasonings = [];
+  newSeasonings.forEach((item, index) => {
+    if (item.percentage > 0) {
+      selectedSeasonings.push({
+        index,
+        percentage: item.percentage,
+      });
+    }
+  });
+
+}, { deep: true });
+
+
+const resetPercent = () => {
+  seasonings.value.forEach((item) => {
+    item.percentage = 0;
+  });
+}
 </script>
