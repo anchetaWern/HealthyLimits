@@ -87,26 +87,33 @@
         </v-col>
       </v-row>
 
+      <v-row class="d-flex justify-center mb-2">
+        <v-card
+          :title="`${Math.round(totalSodiumPerServing)}mg`"
+          text="Total sodium per serving"
+          width="300"
+        >
+         
+        </v-card>
+      </v-row>
+
       <v-row class="d-flex justify-center mb-2" v-for="(item, index) in seasonings">
         <v-card
           :title="`${item.title.replace('[amount]', computedServing(item))}`"
           width="300"
           :text="item.text"
         >
-          
-            
-            <v-row>
-              <v-col cols="9">
-                <div class="pr-1 pl-3">
-                  <v-slider v-model="item.percentage" min="0" max="100" step="5" show-ticks hint=""></v-slider>
-                </div>
-              </v-col>
-              <v-col>
-                <div :class="['text-body-2 mt-1']">{{item.percentage}}%</div>
-              </v-col>
-            </v-row>
+          <v-row>
+            <v-col cols="9">
+              <div class="pr-1 pl-3">
+                <v-slider v-model="item.percentage" min="0" max="100" step="5" show-ticks hint=""></v-slider>
+              </div>
+            </v-col>
+            <v-col>
+              <div :class="['text-body-2 mt-1']">{{item.percentage}}%</div>
+            </v-col>
+          </v-row>
 
-         
         </v-card>
       </v-row>
 
@@ -161,6 +168,8 @@ const computedServing = (item) => {
   const multi = item.multiplier ? item.multiplier : 1;
   return getSodiumServing(sodiumLimitForSeasoning, item.sodium_content_per_unit, multi); 
 };
+
+
 
 const seasonings = ref([
   {
@@ -257,20 +266,22 @@ const seasonings = ref([
   
 ]);
 
-
-watch(seasonings, (newSeasonings, oldSeasonings) => {
-  
-  const selectedSeasonings = [];
-  newSeasonings.forEach((item, index) => {
-    if (item.percentage > 0) {
-      selectedSeasonings.push({
-        index,
-        percentage: item.percentage,
-      });
-    }
+const totalSodiumPerServing = computed(() => {
+ 
+  const selectedSeasonings = seasonings.value.filter((item) => {
+    return item.percentage > 0;
   });
 
-}, { deep: true });
+  const sodiumPerSeasoning = selectedSeasonings.map((item) => {
+    return (computedServing(item) * item.sodium_content_per_unit);
+  });
+
+  var totalSodium = sodiumPerSeasoning.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue
+  },0);
+  
+  return Math.round(totalSodium / numberOfServings.value);
+});
 
 
 const resetPercent = () => {
